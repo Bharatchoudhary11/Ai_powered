@@ -12,7 +12,13 @@ export default function Home() {
   const [dark, setDark] = useDarkMode();
   const [start, setStart] = useState('');
   const [end, setEnd] = useState('');
+  const [year, setYear] = useState('');
+  const [month, setMonth] = useState('');
   const [records, setRecords] = useState(rawRecords);
+  const years = useMemo(
+    () => Array.from(new Set(records.map((r) => r.date.slice(0, 4)))),
+    [records]
+  );
 
   // simulate real-time updates
   useEffect(() => {
@@ -38,11 +44,13 @@ export default function Home() {
 
   const filtered = useMemo(() => {
     return records.filter((r) => {
+      if (year && !r.date.startsWith(year)) return false;
+      if (month && !r.date.startsWith(`${year}-${month}`)) return false;
       if (start && r.date < start) return false;
       if (end && r.date > end) return false;
       return true;
     });
-  }, [records, start, end]);
+  }, [records, start, end, year, month]);
 
   const totals = useMemo(() => {
     const revenue = filtered.reduce((sum, r) => sum + r.revenue, 0);
@@ -51,6 +59,15 @@ export default function Home() {
     const growth = ((filtered[filtered.length - 1]?.revenue ?? 0) - (filtered[0]?.revenue ?? 0)) / (filtered[0]?.revenue ?? 1) * 100;
     return { revenue, users, conversions, growth: Math.round(growth) };
   }, [filtered]);
+
+  const labels = useMemo(
+    () =>
+      filtered.map((r) => {
+        const d = new Date(r.date);
+        return month ? String(d.getDate()) : `${d.getMonth() + 1}/${d.getDate()}`;
+      }),
+    [filtered, month]
+  );
 
   const exportCsv = () => {
     const header = 'date,revenue,users,conversions\n';
@@ -85,11 +102,11 @@ export default function Home() {
       <div className="grid md:grid-cols-3 gap-4">
         <div className="bg-white dark:bg-gray-800 p-4 rounded shadow">
           <h2 className="mb-2 font-semibold">Revenue</h2>
-          <LineChart data={filtered.map((r) => r.revenue)} />
+          <LineChart data={filtered.map((r) => r.revenue)} labels={labels} />
         </div>
         <div className="bg-white dark:bg-gray-800 p-4 rounded shadow">
           <h2 className="mb-2 font-semibold">Users</h2>
-          <BarChart data={filtered.map((r) => r.users)} />
+          <BarChart data={filtered.map((r) => r.users)} labels={labels} />
         </div>
         <div className="bg-white dark:bg-gray-800 p-4 rounded shadow">
           <h2 className="mb-2 font-semibold">Conversions Split</h2>
@@ -101,6 +118,24 @@ export default function Home() {
 
       <section className="bg-white dark:bg-gray-800 p-4 rounded shadow">
         <div className="flex flex-wrap gap-2 mb-2 items-end">
+          <div>
+            <label className="text-sm mr-1">Year</label>
+            <select value={year} onChange={(e) => setYear(e.target.value)} className="border rounded p-1">
+              <option value="">All</option>
+              {years.map((y) => (
+                <option key={y} value={y}>{y}</option>
+              ))}
+            </select>
+          </div>
+          <div>
+            <label className="text-sm mr-1">Month</label>
+            <select value={month} onChange={(e) => setMonth(e.target.value)} className="border rounded p-1">
+              <option value="">All</option>
+              {Array.from({ length: 12 }, (_, i) => String(i + 1).padStart(2, '0')).map((m) => (
+                <option key={m} value={m}>{m}</option>
+              ))}
+            </select>
+          </div>
           <div>
             <label className="text-sm mr-1">Start</label>
             <input type="date" value={start} onChange={(e) => setStart(e.target.value)} className="border rounded p-1" />

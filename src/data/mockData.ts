@@ -5,9 +5,9 @@ export interface AnalyticsRecord {
   conversions: number;
 }
 
-export const records: AnalyticsRecord[] = Array.from({ length: 30 }).map((_, i) => {
+export const records: AnalyticsRecord[] = Array.from({ length: 365 }).map((_, i) => {
   const date = new Date();
-  date.setDate(date.getDate() - (29 - i));
+  date.setDate(date.getDate() - (364 - i));
 
   // Generate deterministic values based only on the index so that the
   // initial data is identical during server and client rendering. This
