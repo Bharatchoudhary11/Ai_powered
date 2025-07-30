@@ -1,36 +1,56 @@
-import { useMemo, useState } from 'react';
-import { AnalyticsRecord } from '../data/mockData';
+"use client";
+import { useMemo, useState } from "react";
+import { AnalyticsRecord } from "../data/mockData";
 
 interface TableProps {
   data: AnalyticsRecord[];
 }
 
-export default function DataTable({ data }: TableProps) {
-  const [sortKey, setSortKey] = useState<keyof AnalyticsRecord>('date');
-  const [sortDir, setSortDir] = useState<'asc' | 'desc'>('asc');
+function DataTable({ data }: TableProps) {
+  const [sortKey, setSortKey] = useState<keyof AnalyticsRecord>("date");
+  const [sortDir, setSortDir] = useState<"asc" | "desc">("asc");
   const [page, setPage] = useState(0);
   const pageSize = 5;
 
+  const today = new Date().toISOString().slice(0, 10);
+
+  const adjustedData = useMemo(() => {
+    const MAX_REVENUE = 200000;
+    const MAX_USERS = 10000;
+    const MAX_CONVERSIONS = 1000;
+
+    return data.map((row) => {
+      if (row.date === today) {
+        return {
+          ...row,
+          revenue: Math.min(row.revenue, MAX_REVENUE),
+          users: Math.min(row.users, MAX_USERS),
+          conversions: Math.min(row.conversions, MAX_CONVERSIONS),
+        };
+      }
+      return row;
+    });
+  }, [data, today]);
+
   const sorted = useMemo(() => {
-    const sortedData = [...data].sort((a, b) => {
+    return [...adjustedData].sort((a, b) => {
       const valA = a[sortKey];
       const valB = b[sortKey];
-      if (valA < valB) return sortDir === 'asc' ? -1 : 1;
-      if (valA > valB) return sortDir === 'asc' ? 1 : -1;
+      if (valA < valB) return sortDir === "asc" ? -1 : 1;
+      if (valA > valB) return sortDir === "asc" ? 1 : -1;
       return 0;
     });
-    return sortedData;
-  }, [data, sortKey, sortDir]);
+  }, [adjustedData, sortKey, sortDir]);
 
   const paged = sorted.slice(page * pageSize, (page + 1) * pageSize);
   const pageCount = Math.ceil(sorted.length / pageSize);
 
   const toggleSort = (key: keyof AnalyticsRecord) => {
     if (key === sortKey) {
-      setSortDir(sortDir === 'asc' ? 'desc' : 'asc');
+      setSortDir(sortDir === "asc" ? "desc" : "asc");
     } else {
       setSortKey(key);
-      setSortDir('asc');
+      setSortDir("asc");
     }
   };
 
@@ -39,21 +59,24 @@ export default function DataTable({ data }: TableProps) {
       <table className="w-full text-sm border-collapse">
         <thead>
           <tr className="bg-gray-100 dark:bg-gray-700">
-            {['date', 'revenue', 'users', 'conversions'].map((key) => (
+            {["date", "revenue", "users", "conversions"].map((key) => (
               <th
                 key={key}
                 className="p-2 cursor-pointer"
                 onClick={() => toggleSort(key as keyof AnalyticsRecord)}
               >
                 {key}
-                {sortKey === key && (sortDir === 'asc' ? ' ▲' : ' ▼')}
+                {sortKey === key && (sortDir === "asc" ? " ▲" : " ▼")}
               </th>
             ))}
           </tr>
         </thead>
         <tbody>
           {paged.map((row) => (
-            <tr key={row.date} className="odd:bg-gray-50 dark:odd:bg-gray-800">
+            <tr
+              key={row.date}
+              className="odd:bg-gray-50 dark:odd:bg-gray-800 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors"
+            >
               <td className="p-2">{row.date}</td>
               <td className="p-2">${row.revenue}</td>
               <td className="p-2">{row.users}</td>
@@ -84,3 +107,5 @@ export default function DataTable({ data }: TableProps) {
     </div>
   );
 }
+
+export default DataTable;
