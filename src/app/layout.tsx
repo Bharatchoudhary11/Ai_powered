@@ -12,8 +12,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en" suppressHydrationWarning>
-      {/* ✅ Allow dark mode theme */}
+    <html lang="en" className="" suppressHydrationWarning>
       <body className="antialiased bg-[var(--background)] text-[var(--foreground)] transition-colors duration-300 min-h-screen">
         {children}
       </body>

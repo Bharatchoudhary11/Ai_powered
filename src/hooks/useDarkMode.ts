@@ -2,34 +2,41 @@
 import { useEffect, useState } from "react";
 
 export default function useDarkMode() {
-  const [enabled, setEnabled] = useState(() => {
-    if (typeof window === "undefined") return false;
-    const savedTheme = localStorage.getItem("theme");
-    if (savedTheme) {
-      return savedTheme === "dark";
-    }
-    return window.matchMedia("(prefers-color-scheme: dark)").matches;
-  });
+  const [enabled, setEnabled] = useState(false);
+  const [mounted, setMounted] = useState(false);
 
-  // Apply dark mode to the <html> tag for full-page effect
+  // Load saved theme or system preference on mount
   useEffect(() => {
+    const savedTheme = localStorage.getItem("theme");
+
+    if (savedTheme === "dark") {
+      setEnabled(true);
+    } else if (savedTheme === "light") {
+      setEnabled(false);
+    } else {
+      const prefersDark = window.matchMedia("(prefers-color-scheme: dark)").matches;
+      setEnabled(prefersDark);
+    }
+
+    setMounted(true);
+  }, []);
+
+  // Apply/remove dark mode class dynamically
+  useEffect(() => {
+    if (!mounted) return;
+
     const root = document.documentElement;
 
     if (enabled) {
-      root.classList.add("dark", "theme-transition");
+      root.classList.add("dark");
+      root.classList.remove("light");
       localStorage.setItem("theme", "dark");
     } else {
       root.classList.remove("dark");
-      root.classList.add("theme-transition");
+      root.classList.add("light");
       localStorage.setItem("theme", "light");
     }
+  }, [enabled, mounted]);
 
-    // Remove transition helper class after animation
-    const timeout = setTimeout(() => {
-      root.classList.remove("theme-transition");
-    }, 500);
-    return () => clearTimeout(timeout);
-  }, [enabled]);
-
-  return [enabled, setEnabled] as const;
+  return { enabled, setEnabled, mounted };
 }
