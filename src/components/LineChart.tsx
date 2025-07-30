@@ -6,11 +6,13 @@ interface LineChartProps {
 
 export default function LineChart({ data, width = 300, height = 150 }: LineChartProps) {
   const axisPadding = 20;
-  const max = Math.max(...data);
+  const max = data.length > 0 ? Math.max(...data) : 0;
+  const safeMax = max > 0 ? max : 1;
+  const denom = Math.max(1, data.length - 1);
   const points = data
     .map((d, i) => {
-      const x = (i / (data.length - 1)) * width;
-      const y = height - (d / max) * height;
+      const x = (i / denom) * width;
+      const y = height - (d / safeMax) * height;
       return `${x},${y}`;
     })
     .join(' ');
@@ -26,8 +28,8 @@ export default function LineChart({ data, width = 300, height = 150 }: LineChart
 
       {/* Y axis ticks */}
       {Array.from({ length: yTicks }).map((_, i) => {
-        const value = (max / (yTicks - 1)) * i;
-        const y = height - (value / max) * height;
+        const value = (safeMax / (yTicks - 1)) * i;
+        const y = height - (value / safeMax) * height;
         return (
           <text
             key={i}
@@ -44,7 +46,7 @@ export default function LineChart({ data, width = 300, height = 150 }: LineChart
       {/* X axis ticks */}
       {data.map((_, i) => {
         if (i % xTickInterval !== 0) return null;
-        const x = (i / (data.length - 1)) * width;
+        const x = (i / denom) * width;
         return (
           <text key={i} x={x} y={height + 12} fontSize={10} textAnchor="middle">
             {i + 1}

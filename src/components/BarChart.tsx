@@ -6,8 +6,9 @@ interface BarChartProps {
 
 export default function BarChart({ data, width = 300, height = 150 }: BarChartProps) {
   const axisPadding = 20;
-  const max = Math.max(...data);
-  const barWidth = width / data.length;
+  const max = data.length > 0 ? Math.max(...data) : 0;
+  const safeMax = max > 0 ? max : 1;
+  const barWidth = data.length > 0 ? width / data.length : width;
   const yTicks = 5;
   const xTickInterval = Math.max(1, Math.floor(data.length / 5));
 
@@ -19,8 +20,8 @@ export default function BarChart({ data, width = 300, height = 150 }: BarChartPr
 
       {/* Y axis ticks */}
       {Array.from({ length: yTicks }).map((_, i) => {
-        const value = (max / (yTicks - 1)) * i;
-        const y = height - (value / max) * height;
+        const value = (safeMax / (yTicks - 1)) * i;
+        const y = height - (value / safeMax) * height;
         return (
           <text
             key={i}
@@ -46,7 +47,7 @@ export default function BarChart({ data, width = 300, height = 150 }: BarChartPr
       })}
 
       {data.map((d, i) => {
-        const barHeight = (d / max) * height;
+        const barHeight = (d / safeMax) * height;
         return (
           <rect
             key={i}
