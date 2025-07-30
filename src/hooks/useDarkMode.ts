@@ -2,17 +2,14 @@
 import { useEffect, useState } from "react";
 
 export default function useDarkMode() {
-  const [enabled, setEnabled] = useState(false);
-
-  // Load stored theme or system preference
-  useEffect(() => {
+  const [enabled, setEnabled] = useState(() => {
+    if (typeof window === "undefined") return false;
     const savedTheme = localStorage.getItem("theme");
     if (savedTheme) {
-      setEnabled(savedTheme === "dark");
-    } else {
-      setEnabled(window.matchMedia("(prefers-color-scheme: dark)").matches);
+      return savedTheme === "dark";
     }
-  }, []);
+    return window.matchMedia("(prefers-color-scheme: dark)").matches;
+  });
 
   // Apply dark mode to the <html> tag for full-page effect
   useEffect(() => {
