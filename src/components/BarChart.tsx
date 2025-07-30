@@ -1,10 +1,11 @@
 interface BarChartProps {
   data: number[];
+  labels?: string[];
   width?: number;
   height?: number;
 }
 
-export default function BarChart({ data, width = 300, height = 150 }: BarChartProps) {
+export default function BarChart({ data, labels, width = 300, height = 150 }: BarChartProps) {
   const axisPadding = 20;
   const max = Math.max(...data);
   const barWidth = width / data.length;
@@ -40,7 +41,7 @@ export default function BarChart({ data, width = 300, height = 150 }: BarChartPr
         const x = i * barWidth + barWidth / 2;
         return (
           <text key={i} x={x} y={height + 12} fontSize={10} textAnchor="middle">
-            {i + 1}
+            {labels ? labels[i] : i + 1}
           </text>
         );
       })}

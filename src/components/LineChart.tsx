@@ -1,10 +1,11 @@
 interface LineChartProps {
   data: number[];
+  labels?: string[];
   width?: number;
   height?: number;
 }
 
-export default function LineChart({ data, width = 300, height = 150 }: LineChartProps) {
+export default function LineChart({ data, labels, width = 300, height = 150 }: LineChartProps) {
   const axisPadding = 20;
   const max = Math.max(...data);
   const points = data
@@ -47,7 +48,7 @@ export default function LineChart({ data, width = 300, height = 150 }: LineChart
         const x = (i / (data.length - 1)) * width;
         return (
           <text key={i} x={x} y={height + 12} fontSize={10} textAnchor="middle">
-            {i + 1}
+            {labels ? labels[i] : i + 1}
           </text>
         );
       })}
