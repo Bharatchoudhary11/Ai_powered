@@ -5,11 +5,10 @@ import LineChart from '../components/LineChart';
 import BarChart from '../components/BarChart';
 import PieChart from '../components/PieChart';
 import DataTable from '../components/DataTable';
-import useDarkMode from '../hooks/useDarkMode';
+import DarkModeToggle from '../components/DarkModeToggle';
 import { records as rawRecords } from '../data/mockData';
 
 export default function Home() {
-  const [dark, setDark] = useDarkMode();
   const [start, setStart] = useState('');
   const [end, setEnd] = useState('');
   const [year, setYear] = useState('');
@@ -85,12 +84,7 @@ export default function Home() {
     <div className="p-4 sm:p-8 space-y-6">
       <header className="flex justify-between items-center">
         <h1 className="text-2xl font-bold">ADmyBRAND Insights</h1>
-        <button
-          className="px-3 py-1 border rounded"
-          onClick={() => setDark(!dark)}
-        >
-          {dark ? 'Light' : 'Dark'} Mode
-        </button>
+        <DarkModeToggle />
       </header>
       <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
         <MetricCard title="Revenue" value={`$${totals.revenue}`} />
