@@ -1,36 +1,77 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# ADmyBRAND Insights Dashboard
+
+This project is a small analytics dashboard built with **Next.js** and **Tailwind CSS**. It showcases revenue, user, and conversion metrics with live updating charts and a sortable data table.
+
+## Live Demo
+- [https://ai-powered-mocha.vercel.app/](https://ai-powered-mocha.vercel.app/)
+
+## GitHub
+- [https://github.com/Bharatchoudhary11/Ai_powered](https://github.com/Bharatchoudhary11/Ai_powered)
 
 ## Getting Started
+Clone the repo and install dependencies:
 
-First, run the development server:
+```bash
+git clone https://github.com/Bharatchoudhary11/Ai_powered.git
+cd Ai_powered
+npm install
+```
+
+Start the development server:
 
 ```bash
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Build and start for production:
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+```bash
+npm run build
+npm start
+```
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+Run lint checks:
 
-## Learn More
+```bash
+npm run lint
+```
 
-To learn more about Next.js, take a look at the following resources:
+## Features
+- Metric cards showing revenue, users, conversions and growth
+- Line, bar and pie charts for analytics
+- Dark mode toggle
+- CSV export of filtered data
+- Sortable and paginated table with yearly/monthly filters
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+## AI Usage Report
+### AI Tools Used
+- Primary tools: GitHub Copilot, ChatGPT
+- Key use cases: generating TypeScript components, help with Tailwind styling, writing README sections
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+### Sample Prompts
+1. "Create a responsive React dashboard component with metric cards and charts"
+2. "Help me implement smooth scroll animations for table pagination"
 
-## Deploy on Vercel
+### AI vs Manual Work Split
+- **AI-generated**: component scaffolding, chart drawing logic (~60%)
+- **Manual coding**: data generation, UI polish, Next.js integration
+- **Customization**: adapted AI suggestions to use Tailwind and match the desired layout
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+## Evaluation Criteria
+- **Beautiful UI Design** – 40%
+- **AI Tool Usage** – 25%
+- **Code Quality** – 20%
+- **Functionality** – 10%
+- **Documentation** – 5%
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+### Pro Tips
+- Study modern SaaS sites for inspiration
+- Use an 8px grid for spacing
+- Choose colors that convey trust
+- Define clear typographic hierarchy
+
+### Timeline Example
+1. Day 1: Planning, AI research, initial setup
+2. Day 2: Core development with AI assistance
+3. Day 3: UI polish, deployment and docs
+
