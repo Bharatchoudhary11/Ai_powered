@@ -1,103 +1,118 @@
-import Image from "next/image";
+'use client';
+import { useEffect, useMemo, useState } from 'react';
+import MetricCard from '../components/MetricCard';
+import LineChart from '../components/LineChart';
+import BarChart from '../components/BarChart';
+import PieChart from '../components/PieChart';
+import DataTable from '../components/DataTable';
+import useDarkMode from '../hooks/useDarkMode';
+import { records as rawRecords } from '../data/mockData';
 
 export default function Home() {
-  return (
-    <div className="font-sans grid grid-rows-[20px_1fr_20px] items-center justify-items-center min-h-screen p-8 pb-20 gap-16 sm:p-20">
-      <main className="flex flex-col gap-[32px] row-start-2 items-center sm:items-start">
-        <Image
-          className="dark:invert"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={180}
-          height={38}
-          priority
-        />
-        <ol className="font-mono list-inside list-decimal text-sm/6 text-center sm:text-left">
-          <li className="mb-2 tracking-[-.01em]">
-            Get started by editing{" "}
-            <code className="bg-black/[.05] dark:bg-white/[.06] font-mono font-semibold px-1 py-0.5 rounded">
-              src/app/page.tsx
-            </code>
-            .
-          </li>
-          <li className="tracking-[-.01em]">
-            Save and see your changes instantly.
-          </li>
-        </ol>
+  const [dark, setDark] = useDarkMode();
+  const [start, setStart] = useState('');
+  const [end, setEnd] = useState('');
+  const [records, setRecords] = useState(rawRecords);
 
-        <div className="flex gap-4 items-center flex-col sm:flex-row">
-          <a
-            className="rounded-full border border-solid border-transparent transition-colors flex items-center justify-center bg-foreground text-background gap-2 hover:bg-[#383838] dark:hover:bg-[#ccc] font-medium text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5 sm:w-auto"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className="dark:invert"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={20}
-              height={20}
-            />
-            Deploy now
-          </a>
-          <a
-            className="rounded-full border border-solid border-black/[.08] dark:border-white/[.145] transition-colors flex items-center justify-center hover:bg-[#f2f2f2] dark:hover:bg-[#1a1a1a] hover:border-transparent font-medium text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5 w-full sm:w-auto md:w-[158px]"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Read our docs
-          </a>
+  // simulate real-time updates
+  useEffect(() => {
+    const id = setInterval(() => {
+      setRecords((prev) => {
+        const last = prev[prev.length - 1];
+        const date = new Date(last.date);
+        date.setDate(date.getDate() + 1);
+        const users = Math.floor(200 + Math.random() * 300);
+        const conversions = Math.floor(users * (0.05 + Math.random() * 0.1));
+        const revenue = conversions * (20 + Math.random() * 80);
+        const newRecord = {
+          date: date.toISOString().slice(0, 10),
+          revenue: Math.round(revenue),
+          users,
+          conversions,
+        };
+        return [...prev.slice(1), newRecord];
+      });
+    }, 5000);
+    return () => clearInterval(id);
+  }, []);
+
+  const filtered = useMemo(() => {
+    return records.filter((r) => {
+      if (start && r.date < start) return false;
+      if (end && r.date > end) return false;
+      return true;
+    });
+  }, [records, start, end]);
+
+  const totals = useMemo(() => {
+    const revenue = filtered.reduce((sum, r) => sum + r.revenue, 0);
+    const users = filtered.reduce((sum, r) => sum + r.users, 0);
+    const conversions = filtered.reduce((sum, r) => sum + r.conversions, 0);
+    const growth = ((filtered[filtered.length - 1]?.revenue ?? 0) - (filtered[0]?.revenue ?? 0)) / (filtered[0]?.revenue ?? 1) * 100;
+    return { revenue, users, conversions, growth: Math.round(growth) };
+  }, [filtered]);
+
+  const exportCsv = () => {
+    const header = 'date,revenue,users,conversions\n';
+    const rows = filtered.map((r) => `${r.date},${r.revenue},${r.users},${r.conversions}`).join('\n');
+    const blob = new Blob([header + rows], { type: 'text/csv' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = 'data.csv';
+    a.click();
+    URL.revokeObjectURL(url);
+  };
+
+  return (
+    <div className="p-4 sm:p-8 space-y-6">
+      <header className="flex justify-between items-center">
+        <h1 className="text-2xl font-bold">ADmyBRAND Insights</h1>
+        <button
+          className="px-3 py-1 border rounded"
+          onClick={() => setDark(!dark)}
+        >
+          {dark ? 'Light' : 'Dark'} Mode
+        </button>
+      </header>
+      <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
+        <MetricCard title="Revenue" value={`$${totals.revenue}`} />
+        <MetricCard title="Users" value={totals.users} />
+        <MetricCard title="Conversions" value={totals.conversions} />
+        <MetricCard title="Growth" value={`${totals.growth}%`} delta={totals.growth} />
+      </div>
+
+      <div className="grid md:grid-cols-3 gap-4">
+        <div className="bg-white dark:bg-gray-800 p-4 rounded shadow">
+          <h2 className="mb-2 font-semibold">Revenue</h2>
+          <LineChart data={filtered.map((r) => r.revenue)} />
         </div>
-      </main>
-      <footer className="row-start-3 flex gap-[24px] flex-wrap items-center justify-center">
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/file.svg"
-            alt="File icon"
-            width={16}
-            height={16}
+        <div className="bg-white dark:bg-gray-800 p-4 rounded shadow">
+          <h2 className="mb-2 font-semibold">Users</h2>
+          <BarChart data={filtered.map((r) => r.users)} />
+        </div>
+        <div className="bg-white dark:bg-gray-800 p-4 rounded shadow">
+          <h2 className="mb-2 font-semibold">Conversions Split</h2>
+          <PieChart
+            data={[{ value: totals.conversions, color: '#3b82f6' }, { value: totals.users - totals.conversions, color: '#d1d5db' }]}
           />
-          Learn
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/window.svg"
-            alt="Window icon"
-            width={16}
-            height={16}
-          />
-          Examples
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/globe.svg"
-            alt="Globe icon"
-            width={16}
-            height={16}
-          />
-          Go to nextjs.org →
-        </a>
-      </footer>
+        </div>
+      </div>
+
+      <section className="bg-white dark:bg-gray-800 p-4 rounded shadow">
+        <div className="flex flex-wrap gap-2 mb-2 items-end">
+          <div>
+            <label className="text-sm mr-1">Start</label>
+            <input type="date" value={start} onChange={(e) => setStart(e.target.value)} className="border rounded p-1" />
+          </div>
+          <div>
+            <label className="text-sm mr-1">End</label>
+            <input type="date" value={end} onChange={(e) => setEnd(e.target.value)} className="border rounded p-1" />
+          </div>
+          <button className="px-2 py-1 border rounded" onClick={exportCsv}>Export CSV</button>
+        </div>
+        <DataTable data={filtered} />
+      </section>
     </div>
   );
 }
