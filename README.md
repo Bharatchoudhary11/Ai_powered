@@ -57,21 +57,5 @@ npm run lint
 - **Manual coding**: data generation, UI polish, Next.js integration
 - **Customization**: adapted AI suggestions to use Tailwind and match the desired layout
 
-## Evaluation Criteria
-- **Beautiful UI Design** – 40%
-- **AI Tool Usage** – 25%
-- **Code Quality** – 20%
-- **Functionality** – 10%
-- **Documentation** – 5%
 
-### Pro Tips
-- Study modern SaaS sites for inspiration
-- Use an 8px grid for spacing
-- Choose colors that convey trust
-- Define clear typographic hierarchy
-
-### Timeline Example
-1. Day 1: Planning, AI research, initial setup
-2. Day 2: Core development with AI assistance
-3. Day 3: UI polish, deployment and docs
 
