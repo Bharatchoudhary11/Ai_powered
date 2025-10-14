@@ -43,18 +43,5 @@ npm run lint
 - CSV export of filtered data
 - Sortable and paginated table with yearly/monthly filters
 
-## AI Usage Report
-### AI Tools Used
-- Primary tools: GitHub Copilot
-
-### Sample Prompts
-1. "Create a responsive React dashboard component with metric cards and charts"
-2. "Help me implement smooth scroll animations for table pagination"
-
-### AI vs Manual Work Split
-- **AI-generated**: component scaffolding, chart drawing logic (~60%)
-- **Manual coding**: data generation, UI polish, Next.js integration
-- **Customization**: adapted AI suggestions to use Tailwind and match the desired layout
-
 
 
