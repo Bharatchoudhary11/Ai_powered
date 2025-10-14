@@ -45,8 +45,7 @@ npm run lint
 
 ## AI Usage Report
 ### AI Tools Used
-- Primary tools: GitHub Copilot, ChatGPT
-- Key use cases: generating TypeScript components, help with Tailwind styling, writing README sections
+- Primary tools: GitHub Copilot
 
 ### Sample Prompts
 1. "Create a responsive React dashboard component with metric cards and charts"
